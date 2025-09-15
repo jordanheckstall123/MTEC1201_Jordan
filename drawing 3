@@ -1,0 +1,61 @@
+let tool = 1;
+let prevX, prevY;
+let c1, c2;
+
+function setup() {
+    createCanvas(600, 400);
+    background(255);
+    c1 = color(255, 0, 0);
+    c2 = color(0, 0, 255);
+    textSize(16);
+}
+
+function draw() {
+    // Show current tool
+    fill(0);
+    noStroke();
+    rect(0, 0, width, 30);
+    fill(255);
+    text("Tool: " + tool + " (Press 1, 2, or 3 to switch)", 10, 20);
+    
+    // Tool 1: Gradient Line
+    if (mouseIsPressed && tool === 1) {
+        let amt = map(mouseX, 0, width, 0, 1);
+        let gradColor = lerpColor(c1, c2, amt);
+        stroke(gradColor);
+        strokeWeight(4);
+        line(pmouseX, pmouseY, mouseX, mouseY);
+    }
+    
+    // Tool 2: Variable Size Ellipse
+    if (mouseIsPressed && tool === 2) {
+        let sz = map(mouseY, 0, height, 10, 100);
+        fill(lerpColor(c2, c1, map(mouseY, 0, height, 0, 1)));
+        noStroke();
+        ellipse(mouseX, mouseY, sz, sz);
+    }
+    
+    // Tool 3: Spray Paint
+    if (mouseIsPressed && tool === 3) {
+        for (let i = 0; i < 20; i++) {
+            let angle = random(TWO_PI);
+            let rad = random(0, 20);
+            let sx = mouseX + cos(angle) * rad;
+            let sy = mouseY + sin(angle) * rad;
+            let sprayColor = lerpColor(c1, c2, random(1));
+            stroke(sprayColor);
+            point(sx, sy);
+        }
+    }
+}
+
+function keyPressed() {
+    if (key === '1') tool = 1;
+    if (key === '2') tool = 2;
+    if (key === '3') tool = 3;
+}
+
+function mousePressed() {
+    prevX = mouseX;
+    prevY = mouseY;
+}
