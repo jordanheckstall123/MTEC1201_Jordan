@@ -1,0 +1,32 @@
+let brushSize = 20;
+let brushColor;
+let startColor;
+let endColor;
+
+function setup() {
+    createCanvas(800, 600);
+    background(255);
+    startColor = color(255, 0, 0); // Red
+    endColor = color(0, 0, 255);   // Blue
+}
+
+function draw() {
+    // Show current brush
+    noStroke();
+    
+    ellipse(mouseX, mouseY, brushSize, brushSize);
+}
+
+function mousePressed() {
+    // Map mouseX to brush size (10 to 100)
+    brushSize = map(mouseX, 0, width, 10, 100);
+
+    // Map mouseY to color interpolation between startColor and endColor
+    let amt = map(mouseY, 0, height, 0, 1);
+    brushColor = lerpColor(startColor, endColor, amt);
+
+    // Draw a shape at mouse position
+    noStroke();
+    fill(brushColor);
+    rect(mouseX - brushSize/2, mouseY - brushSize/2, brushSize, brushSize);
+}
