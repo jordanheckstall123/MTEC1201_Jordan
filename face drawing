@@ -1,0 +1,56 @@
+let tool = 0;
+let colors = [];
+let prevX, prevY;
+
+function setup() {
+    createCanvas(800, 600);
+    background(255);
+    colors = [color(255,0,0), color(0,255,0), color(0,0,255)];
+    prevX = mouseX;
+    prevY = mouseY;
+}
+
+function draw() {
+    if (mouseIsPressed) {
+        if (tool === 0) {
+            // Tool 1: Variable brush size with map()
+            let brushSize = map(mouseY, 0, height, 5, 50);
+            fill(colors[0]);
+            noStroke();
+            ellipse(mouseX, mouseY, brushSize, brushSize);
+        } else if (tool === 1) {
+            // Tool 2: Color gradient line with lerpColor()
+            let amt = map(mouseX, 0, width, 0, 1);
+            let c = lerpColor(colors[1], colors[2], amt);
+            stroke(c);
+            strokeWeight(8);
+            line(prevX, prevY, mouseX, mouseY);
+        } else if (tool === 2) {
+            // Tool 3: Random rectangles with color()
+            let r = color(random(255), random(255), random(255));
+            fill(r);
+            noStroke();
+            rect(mouseX, mouseY, 30, 30);
+        } else if (tool === 3) {
+            // Tool 4: Fading circles with lerpColor() and map()
+            let amt = map(mouseY, 0, height, 0, 1);
+            let c = lerpColor(colors[0], colors[2], amt);
+            fill(c, 100);
+            noStroke();
+            ellipse(mouseX, mouseY, 60, 60);
+        } else if (tool === 4) {
+            // Tool 5: Variable stroke weight with map()
+            let sw = map(mouseX, 0, width, 1, 20);
+            stroke(colors[1]);
+            strokeWeight(sw);
+            line(prevX, prevY, mouseX, mouseY);
+        }
+    }
+    prevX = mouseX;
+    prevY = mouseY;
+}
+
+function mousePressed() {
+    // Switch tools on mouse press
+    tool = (tool + 1) % 5;
+}
