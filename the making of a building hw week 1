@@ -1,0 +1,41 @@
+function setup() {
+    createCanvas(800, 600); //
+    background(230, 240, 255);
+
+    // Building 1
+    strokeWeight(4);
+    stroke(60, 60, 80);
+    fill(180, 200, 220);
+    rect(100, 300, 150, 250);
+}
+function draw() {
+    // Building 2
+    strokeWeight(2);
+    stroke(80, 80, 100);
+    fill(220, 180, 160);
+    rect(300, 350, 120, 200);
+
+    // Building 3
+    strokeWeight(3);
+    stroke(100, 100, 120);
+    fill(200, 220, 180);
+    rect(470, 270, 180, 280);
+
+    // Rooftops (Triangles)
+    strokeWeight(2);
+    stroke(60, 60, 80);
+    fill(150, 100, 80);
+    triangle(100, 300, 175, 220, 250, 300); // Building 1
+    fill(180, 120, 100);
+    triangle(300, 350, 360, 290, 420, 350); // Building 2
+    fill(120, 160, 100);
+    triangle(470, 270, 560, 200, 650, 270); // Building 3
+
+    // Streetlights (Ellipses)
+    strokeWeight(1);
+    stroke(255, 200, 0);
+    fill(255, 255, 120, 180);
+    ellipse(180, 550, 30, 30);
+    ellipse(370, 530, 25, 25);
+    ellipse(600, 500, 35, 35);
+}
