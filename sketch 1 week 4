@@ -1,0 +1,73 @@
+// iteration5.js - Final combined iteration: interactive scene using conditionals + translate/rotate/scale
+(function(){
+  const name = 'Iteration 5 - Final Combined Iteration';
+  window.sketches = window.sketches || {};
+  window.sketches[name] = function(p){
+    let player = {x:300, y:200, size:26};
+    let orbit = 0;
+    let mode = 0; // 0 = calm, 1 = active, toggled with space
+    p.setup = function(){
+      p.createCanvas(600,400);
+      p.rectMode(p.CENTER);
+      p.textAlign(p.CENTER, p.CENTER);
+    }
+
+    p.keyPressed = function(){
+      if (p.key === ' ') {
+        // toggle mode using conditional
+        mode = (mode === 0) ? 1 : 0;
+      }
+      // simple arrow movement
+      const s = p.keyIsDown(p.SHIFT) ? 6 : 3;
+      if (p.keyCode === p.LEFT_ARROW) player.x -= s;
+      if (p.keyCode === p.RIGHT_ARROW) player.x += s;
+      if (p.keyCode === p.UP_ARROW) player.y -= s;
+      if (p.keyCode === p.DOWN_ARROW) player.y += s;
+    }
+
+    p.draw = function(){
+      // background changes based on mode (conditional)
+      if (mode === 0) p.background(240);
+      else p.background(30,30,50);
+
+      // TRANSFORM: center a rotating sun
+      p.push();
+      p.translate(p.width/2, p.height/2);
+      p.rotate(orbit);
+      // sun scales with mode using conditional
+      const sunSize = mode === 0 ? 80 : 120;
+      p.fill(255,200,60);
+      p.noStroke();
+      p.ellipse(0,0,sunSize,sunSize);
+
+      // orbiting planets (nested transforms)
+      for (let i=0;i<3;i++){
+        p.push();
+        const baseRadius = 120 + i*40;
+        p.rotate(orbit * (1 + i*0.4));
+        p.translate(baseRadius,0);
+        // conditional: planet color depends on mouseX
+        if (p.mouseX < p.width/2) p.fill(100 + i*30, 160 - i*20, 220 - i*40);
+        else p.fill(220 - i*30, 140 + i*20, 120 + i*30);
+        p.ellipse(0,0,20 + i*12, 20 + i*12);
+        p.pop();
+      }
+      p.pop();
+
+      // draw player with a transform that pulses based on mode
+      p.push();
+      p.translate(player.x, player.y);
+      const pulse = 1 + 0.05 * Math.sin(p.frameCount * (mode === 0 ? 0.08 : 0.25));
+      p.scale(pulse);
+      p.fill(mode === 0 ? 50 : 200, mode === 0 ? 150 : 80, 160);
+      p.rect(0,0,player.size,player.size,6);
+      p.pop();
+
+      // small HUD text
+      p.fill(mode === 0 ? 0 : 255);
+      p.text('Iteration 5: Press SPACE to toggle mode. Use arrows to move. Mode: ' + (mode===0?'Calm':'Active'), p.width/2, 18);
+
+      orbit += (mode === 0) ? 0.004 : 0.02;
+    }
+  }
+})();
