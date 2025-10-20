@@ -1,0 +1,11 @@
+ function setup() {
+  createCanvas(400, 400);
+}
+
+function draw() {
+  if (mouseX < width / 2) {
+    background(220, 100, 100); // Light red if mouse is on the left
+  } else {
+    background(100, 220, 100); // Light green if mouse is on the right
+  }
+}
