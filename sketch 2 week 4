@@ -1,31 +1,15 @@
-// scale_rotate1.js - Pulsing scale + slow rotation
-(function(){
-  const name = 'ScaleRotate 1 - Pulse & Rotate';
-  window.sketches = window.sketches || {};
-  window.sketches[name] = function(p){
-    p.setup = function(){
-      p.createCanvas(600,400);
-      p.angleMode(p.RADIANS);
-      p.rectMode(p.CENTER);
-    }
+function setup() {
+  createCanvas(400, 400);
+}
 
-    p.draw = function(){
-      p.background(245);
-      p.push();
-      p.translate(p.width/2, p.height/2);
-      // rotate slowly over time
-      p.rotate(p.frameCount * 0.01);
-      // scale pulses with sine
-      const s = 1 + 0.25 * Math.sin(p.frameCount * 0.05);
-      p.scale(s);
-      p.fill(120,180,200);
-      p.noStroke();
-      p.rect(0,0,160,160,16);
-      p.pop();
+function draw() {
+  background(220);
 
-      p.fill(0);
-      p.textAlign(p.CENTER, p.CENTER);
-      p.text('Pulse (scale) with rotate - observe combined transform', p.width/2, 24);
-    }
+  if (mouseY < height / 2) {
+    push(); // Save current drawing state
+    translate(mouseX, mouseY);
+    rectMode(CENTER);
+    rect(0, 0, 20, 20);
+    pop(); // Restore previous drawing state
   }
-})();
+}
