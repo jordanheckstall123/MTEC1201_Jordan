@@ -1,0 +1,154 @@
+  float x, y, vx, int currentStudy = 0;
+color menuColor = color(50, 80, 100);
+color menuTextColor = color(255);
+float menuButtonWidth = 150;
+float menuButtonHeight = 40;
+float menuX, menuY;
+
+float walkerX, walkerY;
+color trailColor;
+ArrayList<ParticleSystem> particleSystems = new ArrayList<ParticleSystem>();
+
+void setup() {
+  size(600, 400);
+  smooth();
+  menuX = width/2 - menuButtonWidth/2;
+  menuY = height/4;
+}
+
+void draw() {
+  background(30);
+  switch (currentStudy) {
+    case 0: drawMenu(); break;
+    case 1: startStudy1(); break;
+    case 2: startStudy2(); drawStudy2(); break;
+    case 3: startStudy3(); drawStudy3(); break;
+  }
+}
+
+void drawMenu() {
+  button(1, "Study 1", menuY);
+  button(2, "Study 2", menuY + menuButtonHeight + 10);
+  button(3, "Study 3", menuY + 2*(menuButtonHeight + 10));
+}
+
+void button(int studyNum, String label, float y) {
+  fill(menuColor);
+  if (mouseX > menuX && mouseX < menuX + menuButtonWidth && mouseY > y && mouseY < y + menuButtonHeight) {
+    fill(lighten(menuColor, 20));
+  }
+  rect(menuX, y, menuButtonWidth, menuButtonHeight);
+  fill(menuTextColor);
+  textAlign(CENTER, CENTER);
+  text(label, menuX + menuButtonWidth/2, y + menuButtonHeight/2);
+}
+
+void mousePressed() {
+  if (currentStudy == 0 && mouseX > menuX && mouseX < menuX + menuButtonWidth) {
+    float y = menuY;
+    if (mouseY > y && mouseY < y + menuButtonHeight) handleMenuSelection(1);
+    else if (mouseY > y + menuButtonHeight + 10 && mouseY < y + 2*(menuButtonHeight + 10)) handleMenuSelection(2);
+    else if (mouseY > y + 2*(menuButtonHeight + 10) && mouseY < y + 3*(menuButtonHeight + 10)) handleMenuSelection(3);
+  }
+}
+
+void handleMenuSelection(int selection) {
+  currentStudy = selection;
+}
+
+void startStudy1() {
+  background(50, 80, 100);
+  int gridSize = 8;
+  float circleSpacingX = width / (gridSize + 1);
+  float circleSpacingY = height / (gridSize + 1);
+  float maxCircleSize = min(circleSpacingX, circleSpacingY) * 0.8;
+
+  for (int i = 1; i <= gridSize; i++) {
+    for (int j = 1; j <= gridSize; j++) {
+      float circleX = i * circleSpacingX;
+      float circleY = j * circleSpacingY;
+      float distance = dist(mouseX, mouseY, circleX, circleY);
+      float circleSize = map(distance, 0, max(width, height) / 2, maxCircleSize, 5);
+      circleSize = constrain(circleSize, 5, maxCircleSize);
+      fill(map(circleSize, 5, maxCircleSize, 255, 100));
+      noStroke();
+      ellipse(circleX, circleY, circleSize, circleSize);
+    }
+  }
+}
+
+void startStudy2() {
+  background(30);
+  walkerX = width / 2;
+  walkerY = height / 2;
+  trailColor = color(random(255), random(255), random(255), 50);
+}
+
+void drawStudy2() {
+  float stepSize = 5;
+  float angle = random(TWO_PI);
+  walkerX += cos(angle) * stepSize;
+  walkerY += sin(angle) * stepSize;
+  walkerX = constrain(walkerX, 0, width);
+  walkerY = constrain(walkerY, 0, height);
+  fill(trailColor);
+  noStroke();
+  ellipse(walkerX, walkerY, 8, 8);
+  trailColor = color(red(trailColor) + random(-10, 10), green(trailColor) + random(-10, 10), blue(trailColor) + random(-10, 10), 50);
+}
+
+void startStudy3() {
+  background(0);
+  particleSystems.clear();
+  particleSystems.add(new ParticleSystem(width / 2, height / 2));
+}
+
+void drawStudy3() {
+  if (mousePressed) particleSystems.add(new ParticleSystem(mouseX, mouseY));
+  for (int i = particleSystems.size() - 1; i >= 0; i--) {
+    ParticleSystem ps = particleSystems.get(i);
+    ps.update();
+    ps.display();
+    if (ps.particles.isEmpty()) particleSystems.remove(i);
+  }
+}
+
+color lighten(color baseColor, int amount) {
+  return color(min(255, red(baseColor) + amount), min(255, green(baseColor) + amount), min(255, blue(baseColor) + amount));
+}
+
+void keyPressed() {
+  if (key == 'r' || key == 'R') resetSketch();
+}
+
+void resetSketch() {
+  currentStudy = 0;
+}
+
+class ParticleSystem {
+  ArrayList<Particle> particles = new ArrayList<Particle>();
+  float originX, originY;
+  ParticleSystem(float x, float y) { originX = x; originY = y; }
+  void addParticle() { particles.add(new Particle(originX, originY)); }
+  void update() {
+    addParticle();
+    for (int i = particles.size() - 1; i >= 0; i--) {
+      Particle p = particles.get(i);
+      p.update();
+      if (p.isDead()) particles.remove(i);
+    }
+  }
+  void display() { for (Particle p : particles) p.display(); }
+}
+
+class Particle vy, alpha = 255, size;
+  color particleColor;
+  Particle(float x, float y) {
+    this.x = x; this.y = y;
+    vx = random(-2, 2); vy = random(-5, 0);
+    size = random(4, 12); particleColor = color(random(150, 255), random(150, 255), random(150, 255));
+  }
+  void update() { x += vx; y += vy; vy += 0.1; alpha -= 2; }
+  void display() { noStroke(); fill(particleColor, alpha); ellipse(x, y, size, size); }
+  boolean isDead() { return alpha <= 0; }
+}
