@@ -1,1 +1,101 @@
+let pacmanX, pacmanY;
+let pacmanSize = 30;
+let pacmanSpeed = 5;
+let mouthAngle = 0;
+let mouthSpeed = 0.05;
+let mouthOpen = true;
+let pellets = [];
+let pelletSize = 10;
+let score = 0;
+let direction = 0; // 0: right, 1: down, 2: left, 3: up
+
+function setup() {
+  createCanvas(600, 400);
+  pacmanX = width / 2;
+  pacmanY = height / 2;
+  frameRate(60);
+
+  // Initialize pellets
+  for (let i = 50; i < width - 50; i += 50) {
+    for (let j = 50; j < height - 50; j += 50) {
+      pellets.push({ x: i, y: j, eaten: false });
+    }
+  }
+}
+
+function draw() {
+  background(0);
+
+  // Update mouth angle
+  if (mouthOpen) {
+    mouthAngle += mouthSpeed;
+    if (mouthAngle > 0.7) {
+      mouthOpen = false;
+    }
+  } else {
+    mouthAngle -= mouthSpeed;
+    if (mouthAngle < 0) {
+      mouthOpen = true;
+    }
+  }
+
+  // Move Pac-Man based on current direction
+  if (keyIsDown(LEFT_ARROW)) {
+    pacmanX -= pacmanSpeed;
+    direction = 2; // Left
+  } else if (keyIsDown(RIGHT_ARROW)) {
+    pacmanX += pacmanSpeed;
+    direction = 0; // Right
+  } else if (keyIsDown(UP_ARROW)) {
+    pacmanY -= pacmanSpeed;
+    direction = 3; // Up
+  } else if (keyIsDown(DOWN_ARROW)) {
+    pacmanY += pacmanSpeed;
+    direction = 1; // Down
+  }
+
+  // Keep Pac-Man within bounds
+  pacmanX = constrain(pacmanX, 0, width);
+  pacmanY = constrain(pacmanY, 0, height);
+
+  // Draw Pac-Man with a mouth, rotating based on direction
+  fill(255, 255, 0);
+  let startAngle = -PI * mouthAngle;
+  let endAngle = PI * mouthAngle;
+
+  if (direction === 0) { // Right
+    arc(pacmanX, pacmanY, pacmanSize, pacmanSize, startAngle, endAngle);
+  } else if (direction === 1) { // Down
+    arc(pacmanX, pacmanY, pacmanSize, pacmanSize, startAngle + PI / 2, endAngle + PI / 2);
+  } else if (direction === 2) { // Left
+    arc(pacmanX, pacmanY, pacmanSize, pacmanSize, startAngle + PI, endAngle + PI);
+  } else if (direction === 3) { // Up
+    arc(pacmanX, pacmanY, pacmanSize, pacmanSize, startAngle - PI / 2, endAngle - PI / 2);
+  }
+
+  // Draw and handle pellets
+  for (let i = 0; i < pellets.length; i++) {
+    let pellet = pellets[i];
+    if (!pellet.eaten) {
+      fill(255);
+      ellipse(pellet.x, pellet.y, pelletSize, pelletSize);
+
+      // Check for collision
+      let distance = dist(pacmanX, pacmanY, pellet.x, pellet.y);
+      if (distance < pacmanSize / 2 + pelletSize / 2) {
+        pellet.eaten = true;
+        score++;
+      }
+    }
+  }
+
+  // Display score
+  fill(255);
+  textSize(20);
+  text('Score: ' + score, 20, 30);
+}
+
+function keyPressed() {
+  // No longer needed for movement, but can be used for other actions
+}
 
